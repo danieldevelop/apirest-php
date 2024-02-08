@@ -62,3 +62,36 @@ if ($method === 'GET') {
     echo json_encode($body['users']);
     exit();
 }
+
+
+// === Solicitudes POST ===
+// ------------------------
+if ($method === 'POST') {
+    $body = json_decode(file_get_contents('php://input'), true); // Se obtiene el cuerpo de la solicitud.
+
+    if (empty($body['name']) || empty($body['price'])) {
+        http_response_code(400); // Si no se recibieron los datos
+
+        $res = array('message' => 'Faltan datos');
+        echo json_encode($res);
+        return;
+    }
+
+    // Primera forma de agregar información al arreglo de productos.
+    /* array_push($products, array(
+        "id" => count($products) + 1,
+        "name" => $body['name'],
+        "price" => $body['price']
+    )); */
+
+    // Segunda forma de agregar información al arreglo de productos.
+    $product = [
+        "id" => count($products) + 1,
+        "name" => $body['name'],
+        "price" => $body['price']
+    ];
+    array_push($products, $product);
+
+    echo json_encode($products); 
+    exit();
+}
