@@ -95,3 +95,33 @@ if ($method === 'POST') {
     echo json_encode($products); 
     exit();
 }
+
+
+// === Solicitudes PUT ===
+// -----------------------
+if ($method === 'PUT') {
+    $body = json_decode(file_get_contents('php://input'), true); // Se obtiene el cuerpo de la solicitud
+
+    if (empty($body['id']) || empty($body['name']) || empty($body['price'])) {
+        http_response_code(400); // Si no se recibieron datos JSON válidos
+
+        $res = array('message' => 'Datos incompletos');
+        echo json_encode($res);
+        return;
+    }
+
+    // Buscamos la tarea a actualizar
+    $key = array_search($body['id'], array_column($products, 'id'));
+    if ($key === false) {
+        http_response_code(400); // Si no encontro el producto
+
+        $res = array('message' => 'Producto no encontrado');
+        echo json_encode($res);
+        return;
+    }
+
+    $products[$key]['name'] = $body['name'];
+    $products[$key]['price'] = $body['price'];
+    echo json_encode($products);
+    exit();
+}
