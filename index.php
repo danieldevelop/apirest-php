@@ -125,3 +125,33 @@ if ($method === 'PUT') {
     echo json_encode($products);
     exit();
 }
+
+
+// === Solicitudes DELETE ===
+// --------------------------
+if ($method === 'DELETE') {
+    $url = explode('/', $_SERVER['REQUEST_URI']);
+    $productId = end($url);
+    
+    if (empty($productId)) {
+        http_response_code(400); // Si no se recibieron datos JSON válidos
+
+        $res = array('message' => 'Datos incompletos');
+        echo json_encode($res);
+        return;
+    }
+
+    // Buscamos la tarea a eliminar
+    $key = array_search($productId, array_column($products, 'id'));
+    if ($key === false) {
+        http_response_code(400); // Si no encontro el producto
+
+        $res = array('message' => 'Producto no encontrado');
+        echo json_encode($res);
+        return;
+    }
+
+    array_splice($products, $key, 1);
+    echo json_encode($products);
+    exit();
+}
